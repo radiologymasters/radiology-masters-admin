@@ -1,12 +1,12 @@
 define("settings", function() {  
     return {
-        homeUrl: "/app",
-        loginUrl: "/account",
-        unauthorizedUrl: "/admin/unauthorized.html",
-        signupOAuthUrl: "/account/oauth-signup.html",
-        viewCaseUrl: "/admin/#/cases/view/",
-        updateCaseUrl: "/admin/#/cases/update/",
-        deleteCaseUrl: "/admin/#/cases/delete/",
+        homeUrl: "../admin/#/",
+        loginUrl: "../account",
+        unauthorizedUrl: "unauthorized.html",
+        signupOAuthUrl: "../account/oauth-signup.html",
+        viewCaseUrl: "#/cases/view/",
+        updateCaseUrl: "#/cases/update/",
+        deleteCaseUrl: "#/cases/delete/",
         
         vimeoClientId: "d579942334f6fd7477d0c546d6887c89c3f08a50",
         vimeoClientSecret: "gHw8DsnLyZ+1BKr9SBJqJPZgBYLO6OEaTDxWcvuLZw+yvZGyBnVwshpCZtdzN0TgS60fWqrKf9zSQjCvMsO8lXTYoryR/tjjQ8crfPqk2zRMEERQ1AWLf0CgxEj8T+lh",

@@ -14,28 +14,28 @@ requirejs.config({
     },
     paths: {
         // VENDOR
-        jquery: "/node_modules/jquery/dist/jquery.min",
-        trumbowyg: "/node_modules/trumbowyg/dist/trumbowyg.min",
-        trumbowygCleanPaste: "/node_modules/trumbowyg/dist/plugins/cleanpaste/trumbowyg.cleanpaste.min",
-        bootstrap: "/node_modules/bootstrap/dist/js/bootstrap.min",
-        validate: "/node_modules/jquery-validation/dist/jquery.validate.min",
-        sammy: "/node_modules/sammy/lib/sammy",
-        VimeoUpload: "/node_modules/vimeo-upload/vimeo-upload",
-        VimeoApi: "/node_modules/vimeo/lib/vimeo",
-        dynatable: "/admin/js/vendor/jquery-dynatable/jquery.dynatable",
-        select2: "/node_modules/select2/dist/js/select2.min",
-        timeago: "/node_modules/timeago/jquery.timeago",
+        jquery: "../node_modules/jquery/dist/jquery.min",
+        trumbowyg: "../node_modules/trumbowyg/dist/trumbowyg.min",
+        trumbowygCleanPaste: "../node_modules/trumbowyg/dist/plugins/cleanpaste/trumbowyg.cleanpaste.min",
+        bootstrap: "../node_modules/bootstrap/dist/js/bootstrap.min",
+        validate: "../node_modules/jquery-validation/dist/jquery.validate.min",
+        sammy: "../node_modules/sammy/lib/sammy",
+        VimeoUpload: "../node_modules/vimeo-upload/vimeo-upload",
+        VimeoApi: "../node_modules/vimeo/lib/vimeo",
+        dynatable: "js/vendor/jquery-dynatable/jquery.dynatable",
+        select2: "../node_modules/select2/dist/js/select2.min",
+        timeago: "../node_modules/timeago/jquery.timeago",
         // INTERNAL
-        settings: '/shared/settings',
-        firebaseConfig: '/shared/settings.firebase',
-        utils: '/shared/utils',
-        loading: "/admin/js/plugins/loading",
-        CaseModel: "/admin/cases/case.model",
-        CaseNotificationModel: "/admin/cases/case.notification.model",
-        CaseMarkdownTemplateModel: "/admin/cases/case.markdown.template",
-        CaseNotificationWidget: "/admin/cases/case.notification.widget",
-        UserModel: "/shared/user.model",
-        VideoModel: "/admin/cases/video.model"
+        settings: '../shared/settings',
+        firebaseConfig: '../shared/settings.firebase',
+        utils: '../shared/utils',
+        loading: "js/plugins/loading",
+        CaseModel: "cases/case.model",
+        CaseNotificationModel: "cases/case.notification.model",
+        CaseMarkdownTemplateModel: "cases/case.markdown.template",
+        CaseNotificationWidget: "cases/case.notification.widget",
+        UserModel: "../shared/user.model",
+        VideoModel: "cases/video.model"
     }
 });
 
@@ -74,31 +74,31 @@ require(requiredModules, function(firebaseConfig, $, sammy, settings, User) {
     
     var sammyApp = sammy(function() {
         this.get("#/", function() {
-          $("#viewport").load("/admin/dashboard.html");
+          $("#viewport").load("dashboard.html");
         });
         
         this.get("#/cases", function() {
-          $('#viewport').load("/admin/cases/all.html");
+          $('#viewport').load("cases/all.html");
         });
         
         this.get("#/cases/add", function() {
-          $("#viewport").load("/admin/cases/add.html");
+          $("#viewport").load("cases/add.html");
         });
         
         this.get("#/cases/view/:caseId", function() {
-          $("#viewport").load("/admin/cases/view.html");
+          $("#viewport").load("cases/view.html");
         });
         
         this.get("#/cases/update/:caseId", function() {
-          $("#viewport").load("/admin/cases/update.html");
+          $("#viewport").load("cases/update.html");
         });
         
         this.get("#/cases/delete/:caseId", function() {
-          $("#viewport").load("/admin/cases/delete.html");
+          $("#viewport").load("cases/delete.html");
         });
         
         this.get("#/cases/test", function() {
-          $("#viewport").load("/admin/cases/test.html");
+          $("#viewport").load("cases/test.html");
         });
         
       });
