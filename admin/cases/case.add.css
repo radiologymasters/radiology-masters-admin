@@ -1,0 +1,55 @@
+#drop_zone {
+    border: 2px dashed #bbb;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    padding-top: 60px;
+    text-align: center;
+    font: 20pt bold 'Helvetica';
+    color: #bbb;
+    height: 300px;
+}
+
+#case-info-container {
+    display: block;
+}
+
+#case-status-container {
+    display: none;
+}
+
+#case-status-sucess {
+    display: none;
+}
+
+#video-error {
+    margin-top: 10px;
+}
+
+#add-case {
+    margin-top: 10px;
+}
+
+#video-info {
+    margin-top: 10px;
+}
+
+.list-unstyled li {
+    margin-bottom: 20px;
+}
+
+.progress {
+    height: 25px;
+    margin-bottom: 0;
+}
+
+.progress .progress-bar {
+    font-size: 20px;
+    height: 25px;
+    line-height: 25px;
+}
+
+.message {
+    margin-left: 10px;
+}
+

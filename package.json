@@ -1,0 +1,26 @@
+{
+  "name": "radiology-masters.admin",
+  "version": "1.0.0",
+  "devDependencies": {
+    "express": "^4.15.4"
+  },
+  "dependencies": {
+    "bootstrap": "^3.3.7",
+    "jquery": "^3.2.1",
+    "jquery-circle-progress": "^1.2.2",
+    "jquery-validation": "^1.17.0",
+    "requirejs": "^2.3.5",
+    "sammy": "^0.7.6",
+    "select2": "^4.0.3",
+    "select2-bootstrap-theme": "0.1.0-beta.10",
+    "timeago": "^1.6.1",
+    "trumbowyg": "^2.8.0",
+    "vimeo": "^1.2.1",
+    "vimeo-upload": "^0.1.6"
+  },
+  "scripts": {
+    "start": "node server.js"
+  },
+  "author": "",
+  "license": "ISC"
+}

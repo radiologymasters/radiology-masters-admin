@@ -1,0 +1,89 @@
+<link href="/admin/cases/case.view.css" rel="stylesheet">
+
+<h1>Viewing Case: <span id="case-title"></span></h1>
+
+<div id="case-info-container" class="panel panel-default">
+    
+    <div class="panel-heading">
+        <ul class="nav nav-pills">
+            <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                  Options <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a id="case-options-update" href="#">Update</a></li>
+                    <li><a id="case-options-delete" href="#">Delete</a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+    
+    <div class="panel-body">
+        <div class="col-md-12">
+            
+            <div class="clearfix">
+                <strong class="col-md-2">Description:</strong>
+                <div id="case-description" class="col-md-10"></div>
+            </div>
+            
+            <ul class="list-unstyled clearfix">
+               
+                <li>
+                    <strong class="col-md-2">Specialities:</strong>
+                    <div class="col-md-10">
+                        <div id="case-specialities"></div>
+                    </div>
+                </li>
+                <li>
+                    <strong class="col-md-2">Complexity:</strong>
+                    <div class="col-md-10">
+                        <span id="case-complexity" class="label"></span>
+                    </div>
+                </li>
+                <li class="clearfix">
+                    <strong class="col-md-2">Video URL:</strong>
+                    <div class="col-md-10">
+                        <iframe id="case-video-embed" src="" style="display:none;" width="640" height="338" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+                    </div>
+                </li>
+                <li>
+                    <strong class="col-md-2">Author:</strong>
+                    <div class="col-md-10">
+                        <span id="case-author"></span>
+                    </div>
+                </li>
+                <li>
+                    <strong class="col-md-2">Total number of views:</strong>
+                    <div class="col-md-10">
+                        <span id="case-views"></span>
+                    </div>
+                </li>
+                <li>
+                    <strong class="col-md-2">Total number of completions:</strong>
+                    <div class="col-md-10">
+                        <span id="case-completed"></span>
+                    </div>
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+</div>
+
+<div id="case-info-error-container" class="panel panel-default" style="display:none;">
+    <div class="panel-body">
+        <h3 id="case-error" class="error"></h3>
+    </div>
+</div>
+
+<script src="/admin/cases/case.model.js"></script>
+<script src="/admin/cases/case.view.js"></script>
+
+<style>
+    
+    #case-info-container li {
+        min-height: 25px;
+        margin-bottom: 10px;
+    }
+    
+</style>

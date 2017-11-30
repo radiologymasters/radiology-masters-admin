@@ -1,0 +1,156 @@
+body {
+    margin-top: 60px;
+    background-color: #2b2b2f;
+}
+
+.select2-results {
+    color: #464545;
+}
+
+#viewport {
+    padding: 20px;
+}
+
+/**START SIDEBAR**/
+.sidebar {
+    display: none;
+    text-align: center;
+}
+
+@media (min-width: 768px) {
+    .sidebar {
+        display: block;
+        position: fixed;
+        top: 51px;
+        bottom: 0;
+        left: 0;
+        z-index: 1000;
+        display: block;
+        padding: 20px;
+        overflow-x: hidden;
+        overflow-y: auto;
+        text-align: left;
+        height: 100% !important;
+    }
+}
+
+.nav-sidebar {
+    margin-right: -21px;
+    margin-bottom: 20px;
+    margin-left: -20px;
+}
+
+.nav-sidebar>li>a {
+    padding-right: 20px;
+    padding-left: 20px;
+}
+
+.nav-sidebar>.active>a,
+.nav-sidebar>.active>a:hover,
+.nav-sidebar>.active>a:focus {}
+
+.navbar-brand>img {
+    height: 25px;
+    line-height: 25px;
+    margin-right: 5px;
+    display: inline;
+    vertical-align: middle;
+}
+/**END SIDEBAR**/
+
+
+/**START VALIDATION LABEL COLOURS**/
+.error {
+    color: red;
+}
+
+.success {
+    color: #0ce3ac;
+}
+/**END VALIDATION LABEL COLOURS**/
+
+/**START JQUERY TIMEAGO**/
+.timeago {
+    color: gray;
+    margin-left: 10px;
+}
+/**END JQUERY TIMEAGO**/
+
+/**START VIEW ALL CASES TABLE**/
+td .action {
+   margin-right: 10px; 
+}
+/**END VIEW ALL CASES TABLE**/
+
+/**START DYNATABLE OVERRIDES**/
+.dynatable-active-page {
+    background: #0ce3ac !important;
+}
+/**END DYNATABLE OVERRIDES**/
+
+/**START BOOTSTRAP PANEL LOADING**/
+.panel {
+    position: relative;
+}
+
+.panel-overlay {
+    position:absolute;
+    top:0;
+    right:0;
+    background-color: rgba(0, 0, 0, 0.5);
+    width:100%;
+    height:100%;
+    display: none;
+    text-align:center;
+    z-index:4;
+}
+
+.panel-overlay .spinner {
+    height: 50px;
+}
+
+.panel-overlay span {
+    vertical-align: bottom;
+}
+
+.panel-overlay .message {
+    font-size: 32px;
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	height: 50px;
+	margin-top: -40px;
+	margin-left: -200px;
+}
+/**END BOOTSTRAP PANEL LOADING**/
+
+/**START BOOTSTRAP OVERRIDES**/
+.nav-pills li {
+    margin-bottom: 0 !important;
+}
+
+.no-padding {
+    padding: 0;
+}
+/**END BOOTSTRAP OVERRIDES**/
+
+/**FIX DYNATABLE RESULT LIMIT SELECT ON CASES VIEW**/
+select {
+    color: initial;
+}
+
+/**TRUMBOWYG EDITOR DIV STYLES**/
+.trumbowyg-box {
+    margin: 0 !important;
+    border-radius: 4px;
+}
+
+#trumbowyg-icons {
+    display: none;
+}
+
+
+/**JQUERY SELECT2 STYLE OVERRIDE**/
+.select2-container {
+    width: 100% !important;
+}
