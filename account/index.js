@@ -5,15 +5,15 @@ requirejs.config({
     },
     paths: {
         // VENDOR
-        jquery: "/node_modules/jquery/dist/jquery.min",
-        bootstrap: "/node_modules/bootstrap/dist/js/bootstrap.min",
-        validate: "/node_modules/jquery-validation/dist/jquery.validate.min",
+        jquery: "../node_modules/jquery/dist/jquery.min",
+        bootstrap: "../node_modules/bootstrap/dist/js/bootstrap.min",
+        validate: "../node_modules/jquery-validation/dist/jquery.validate.min",
         // INTERNAL
-        settings: '/shared/settings',
-        utils: '/shared/utils',
-        UserModel: "/shared/user.model",
-        SignupView: "/account/signup",
-        LoginView: "/account/signin"
+        settings: '../shared/settings',
+        utils: '../shared/utils',
+        UserModel: "../shared/user.model",
+        SignupView: "signup",
+        LoginView: "signin"
     }
 });
 
