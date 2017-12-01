@@ -45,7 +45,7 @@ function createOverlay(parent, settings) {
     
     var message = $("<div/>", { "class": "message" });
     var messageValue = $("<span/>", { text: settings.message });
-    var icon = $("<img />", { src: "/admin/img/flask-spinner.gif", "class": "spinner" });
+    var icon = $("<img />", { src: "img/flask-spinner.gif", "class": "spinner" });
     
     message.append(messageValue, icon);
     overlay.append(message);
