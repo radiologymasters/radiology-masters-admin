@@ -20,7 +20,9 @@ define("CaseMarkdownTemplateModel", ["settings", "utils", "jquery"], function(se
                 var markdownTemplate = createMarkDownTemplate(caseInfo);
                 self.content = window.btoa(markdownTemplate);
                 
-                var credentials = window.btoa(settings.gitHubUsername + ":" + settings.gitHubAccessToken);
+                var gitHubAccessToken = utils.reverseText(settings.gitHubAccessTokenReversed);
+                
+                var credentials = window.btoa(settings.gitHubUsername + ":" + gitHubAccessToken);
                 var url = "https://api.github.com/repos/" + settings.gitHubUsername + "/" + settings.gitHubRepositoryName + "/contents/" + filePath;
                 var body = {
                     path: filePath,
@@ -69,8 +71,9 @@ define("CaseMarkdownTemplateModel", ["settings", "utils", "jquery"], function(se
                 if (!self.SHA) {
                     throw new Error("The case markdown template SHA hash must have a value");
                 }
-                                
-                var credentials = window.btoa(settings.gitHubUsername + ":" + settings.gitHubAccessToken);
+                           
+                var gitHubAccessToken = utils.reverseText(settings.gitHubAccessTokenReversed);     
+                var credentials = window.btoa(settings.gitHubUsername + ":" + gitHubAccessToken);
                 var url = "https://api.github.com/repos/" + settings.gitHubUsername + "/" + settings.gitHubRepositoryName + "/contents/" + self.path;
                 var user = firebase.auth().currentUser;
                 

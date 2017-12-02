@@ -19,10 +19,15 @@ define("utils", function() {
         return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
     }
     
+    function _reverseText(text) {
+        return text.split("").reverse().join("");
+    }
+    
     return {
         getRouteParamValue: _getRouteParamValue,
         getQueryStringParamValue: _getQuerystringParamValue,
-        guid: _guid
+        guid: _guid,
+        reverseText: _reverseText
     };
 });
 

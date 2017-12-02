@@ -14,9 +14,14 @@ define("utils", function() {
         return urlParts[paramIndex -1];
     }
     
+    function _reverseText(text) {
+        return text.split("").reverse().join("");
+    }
+    
     return {
         getRouteParamValue: _getRouteParamValue,
-        guid: _guid
+        guid: _guid,
+        reverseText: _reverseText
     };
 });
 

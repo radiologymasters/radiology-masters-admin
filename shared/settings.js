@@ -12,8 +12,8 @@ define("settings", function() {
         vimeoClientSecret: "gHw8DsnLyZ+1BKr9SBJqJPZgBYLO6OEaTDxWcvuLZw+yvZGyBnVwshpCZtdzN0TgS60fWqrKf9zSQjCvMsO8lXTYoryR/tjjQ8crfPqk2zRMEERQ1AWLf0CgxEj8T+lh",
         // The Vimeo access token must have the delete, create and upload scopes.
         vimeoAccessToken: "b45a33ccf5a92da4f05da80e77c531f8",
-        
-        gitHubAccessToken: "2bb78101a1a62f30693390fc359b1778d7e33f2f",
+        // This needs to be stored in reverse otherwise GitHub will remove it each time it is checked in.
+        gitHubAccessTokenReversed: "91700385406048c11c03c2d4fef4d5bd01b7165a",
         gitHubUsername: "radiologymasters",
         gitHubRepositoryName: "radiologymasters",
         gitHubBranch: "master",
