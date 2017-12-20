@@ -9,6 +9,9 @@ define("CaseModel", ["utils", "CaseNotificationModel"], function(utils, CaseNoti
         this.complexity = "";
         this.videoId = null;
         this.videoUrl = "";
+        this.videoThumbnailSmall = "";
+        this.videoThumbnailMedium = "";
+        this.videoThumbnailLarge = "";
         this.markdownTemplatePath = "";
         this.markdownTemplateSHA = "";
         this.markdownTemplateUrl = "";
@@ -53,6 +56,9 @@ define("CaseModel", ["utils", "CaseNotificationModel"], function(utils, CaseNoti
                         self.complexity = caseInfo.val().complexity;
                         self.videoId = caseInfo.val().videoId;
                         self.videoUrl = caseInfo.val().videoUrl;
+                        self.videoThumbnailSmall = caseInfo.val().videoThumbnailSmall;
+                        self.videoThumbnailMedium = caseInfo.val().videoThumbnailMedium;
+                        self.videoThumbnailLarge = caseInfo.val().videoThumbnailLarge;
                         self.markdownTemplatePath = caseInfo.val().markdownTemplatePath;
                         self.markdownTemplateSHA = caseInfo.val().markdownTemplateSHA;
                         self.markdownTemplateUrl = caseInfo.val().markdownTemplateUrl;
@@ -88,6 +94,9 @@ define("CaseModel", ["utils", "CaseNotificationModel"], function(utils, CaseNoti
                     complexity: self.complexity,
                     videoId: self.videoId,
                     videoUrl: self.videoUrl,
+                    videoThumbnailSmall: self.videoThumbnailSmall,
+                    videoThumbnailMedium: self.videoThumbnailMedium,
+                    videoThumbnailLarge: self.videoThumbnailLarge,
                     markdownTemplatePath: self.markdownTemplatePath,
                     markdownTemplateSHA: self.markdownTemplateSHA,
                     markdownTemplateUrl: self.markdownTemplateUrl,
@@ -138,6 +147,9 @@ define("CaseModel", ["utils", "CaseNotificationModel"], function(utils, CaseNoti
                     complexity: self.complexity,
                     videoId: self.videoId,
                     videoUrl: self.videoUrl,
+                    videoThumbnailSmall: self.videoThumbnailSmall,
+                    videoThumbnailMedium: self.videoThumbnailMedium,
+                    videoThumbnailLarge: self.videoThumbnailLarge,
                     markdownTemplatePath: self.markdownTemplatePath,
                     markdownTemplateSHA: self.markdownTemplateSHA,
                     markdownTemplateUrl: self.markdownTemplateUrl,

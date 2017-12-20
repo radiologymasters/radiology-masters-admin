@@ -125,6 +125,9 @@ define("CaseMarkdownTemplateModel", ["settings", "utils", "jquery"], function(se
                 speciality: specialities,
                 complexity: caseInfo.complexity,
                 videoUrl: caseInfo.videoUrl,
+                videoThumbnailLarge: caseInfo.videoThumbnailLarge,
+                videoThumbnailMedium: caseInfo.videoThumbnailMedium,
+                videoThumbnailSmall: caseInfo.videoThumbnailSmall,
                 author: caseInfo.createdByUserFullName,
                 description: caseInfo.description
             });

@@ -138,6 +138,9 @@ require(requiredModules, function(
                      resolve(caseInfo);
                 })
                 .catch(function (error) {
+                    
+                    console.log("Database error", error);
+                    
                     $("#db-write-status .error").text("An error occurred while saving the case: " + error.message);
                     
                     reject(caseInfo, error);
@@ -165,12 +168,34 @@ require(requiredModules, function(
         caseInfo.createdByUserFullName = user.displayName;
         
         uploadVideo(_videoFile, caseInfo)
+            .then(getVideoThumbnails)
             .then(uploadFileToGithub)
             .then(writeCaseToDatabase)
             .then(handleCaseCreationSuccess)
             .catch(function (caseInfo, error) {
                 console.log("An error occurred while attempting to create the case", error);
             });
+    }
+    
+    function getVideoThumbnails(caseInfo) {
+        
+        var promise = new Promise(function(resolve, reject) {
+            $.getJSON('https://www.vimeo.com/api/v2/video/' + caseInfo.videoId + '.json?callback=?', {format: "json"}, function(data) {
+                
+                caseInfo.videoThumbnailLarge = data[0].thumbnail_large;
+                caseInfo.videoThumbnailMedium = data[0].thumbnail_medium;
+                caseInfo.videoThumbnailSmall = data[0].thumbnail_small;
+                
+                console.log("CASE INFO", caseInfo);
+                
+                resolve(caseInfo);
+            })
+            .fail(function(jqXHR, textStatus, errorThrown) {
+                reject(caseInfo, errorThrown);
+            });
+        });
+        
+        return promise;
     }
     
     function handleCaseCreationSuccess(caseInfo) {
