@@ -15,7 +15,7 @@ define("settings", function() {
         // This needs to be stored in reverse otherwise GitHub will remove it each time it is checked in.
         gitHubAccessTokenReversed: "91700385406048c11c03c2d4fef4d5bd01b7165a",
         gitHubUsername: "radiologymasters",
-        gitHubRepositoryName: "radiologymasters",
+        gitHubRepositoryName: "radiology-masters",
         gitHubBranch: "master",
         gitHubRepositoryCaseFileBasePath: "cases/",
         gitHubMarkDownTemplate: "---\r\nCaseId: {caseId}\r\nTitle: {title}\r\n{speciality}Complexity: {complexity}\r\nVideoUrl: {videoUrl}\r\nAuthor: {author}\r\n---\r\n\r\n{description}",
