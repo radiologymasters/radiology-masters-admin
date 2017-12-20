@@ -18,8 +18,6 @@ define("settings", function() {
         gitHubRepositoryName: "radiology-masters",
         gitHubBranch: "master",
         gitHubRepositoryCaseFileBasePath: "_cases/",
-        gitHubMarkDownTemplate: "---\r\nCaseId: {caseId}\r\nTitle: {title}\r\n{speciality}Complexity: {complexity}\r\nVideoUrl: {videoUrl}\r\nAuthor: {author}\r\n---\r\n\r\n{description}",
-        gitHubMarkDownTemplateSpecialityTemplate: "Speciality:\r\n",
-        gitHubMarkDownTemplateSpecialityItemTemplate: "  - {speciality}\r\n"
+        gitHubMarkDownTemplate: "---\r\nCaseId: {caseId}\r\nTitle: {title}\r\n{speciality}Complexity: {complexity}\r\nVideoUrl: {videoUrl}\r\nAuthor: {author}\r\n---\r\n\r\n{description}"
     };
 });
