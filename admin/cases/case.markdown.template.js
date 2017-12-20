@@ -106,7 +106,7 @@ define("CaseMarkdownTemplateModel", ["settings", "utils", "jquery"], function(se
         
         function createMarkDownTemplate(caseInfo) {
         
-            var specialities = "[";
+            var specialities = "Speciality: [";
         
             for(var i=0; i < caseInfo.speciality.length; i++) {
                 var speciality = caseInfo.speciality[i];
@@ -117,7 +117,7 @@ define("CaseMarkdownTemplateModel", ["settings", "utils", "jquery"], function(se
                 }
             }
             
-            specialities += "]";
+            specialities += "]\r\n";
         
             var template = settings.gitHubMarkDownTemplate.format({
                 caseId: caseInfo.caseId,
