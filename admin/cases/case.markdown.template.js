@@ -125,6 +125,7 @@ define("CaseMarkdownTemplateModel", ["settings", "utils", "jquery"], function(se
                 title: caseInfo.title,
                 speciality: specialities,
                 complexity: caseInfo.complexity,
+                videoId: caseInfo.videoId,
                 videoUrl: caseInfo.videoUrl,
                 videoThumbnailLarge: caseInfo.videoThumbnailLarge,
                 videoThumbnailMedium: caseInfo.videoThumbnailMedium,
