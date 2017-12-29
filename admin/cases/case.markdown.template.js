@@ -120,6 +120,7 @@ define("CaseMarkdownTemplateModel", ["settings", "utils", "jquery"], function(se
             specialities += "]\r\n";
         
             var template = settings.gitHubMarkDownTemplate.format({
+                layout: "case",
                 caseId: caseInfo.caseId,
                 title: caseInfo.title,
                 speciality: specialities,
