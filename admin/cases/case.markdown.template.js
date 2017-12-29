@@ -134,6 +134,9 @@ define("CaseMarkdownTemplateModel", ["settings", "utils", "jquery"], function(se
                 description: caseInfo.description
             });
             
+            console.log("Case Info when writing markdown template", caseInfo);
+            console.log("Template", template);
+            
             return template;
         }
 
