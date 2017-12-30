@@ -180,7 +180,9 @@ require(requiredModules, function(
     function getVideoThumbnails(caseInfo) {
         
         var promise = new Promise(function(resolve, reject) {
-        
+            
+            $("#video-thumbnail-status .progress").show();
+            
             var areThumbnailsAvailable = false;
             var timeout = settings.videoThumbnailTimeoutInMilliseconds || 60000;
             var pollInterval = settings.videoThumbnailPollIntervalInMilliseconds || 5000;
@@ -196,11 +198,16 @@ require(requiredModules, function(
                     caseInfo.videoThumbnailMedium = data[0].thumbnail_medium;
                     caseInfo.videoThumbnailSmall = data[0].thumbnail_small;
                     
+                    $("#video-thumbnail-status .progress").hide();
+                    $("#video-thumbnail-status").addClass("success");
                     $("#video-thumbnail-status .message").text("Completed successfully!");
                     
                     resolve(caseInfo);
                 })
                 .fail(function(jqXHR, textStatus, errorThrown) {
+                    
+                    $("#video-thumbnail-status .progress").hide();
+                    
                     reject(caseInfo, errorThrown);
                 });
             }
@@ -221,6 +228,9 @@ require(requiredModules, function(
                         areThumbnailsAvailable = true;
                     }
                 }).fail(function(jqXHR, textStatus, errorThrown) {
+                    
+                    $("#video-thumbnail-status .progress").hide();
+                    
                     reject(caseInfo, errorThrown);
                 });
                 
@@ -237,6 +247,8 @@ require(requiredModules, function(
                 
                 if (timeTakenInMilliseconds >= timeout) {
                     $("#video-thumbnail-status .error").text("The timeout was reached while waiting for video thumbnails to be available");
+                    
+                    $("#video-thumbnail-status .progress").hide();
                     
                     resolve(caseInfo);
                 }
