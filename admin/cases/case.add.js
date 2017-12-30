@@ -180,19 +180,69 @@ require(requiredModules, function(
     function getVideoThumbnails(caseInfo) {
         
         var promise = new Promise(function(resolve, reject) {
-            $.getJSON('https://www.vimeo.com/api/v2/video/' + caseInfo.videoId + '.json?callback=?', {format: "json"}, function(data) {
+        
+            var areThumbnailsAvailable = false;
+            var timeout = settings.videoThumbnailTimeoutInMilliseconds || 60000;
+            var pollInterval = settings.videoThumbnailPollIntervalInMilliseconds || 5000;
+            var timeTakenInMilliseconds = 0;
+            
+            function getThumbnails() {
                 
-                caseInfo.videoThumbnailLarge = data[0].thumbnail_large;
-                caseInfo.videoThumbnailMedium = data[0].thumbnail_medium;
-                caseInfo.videoThumbnailSmall = data[0].thumbnail_small;
+                console.log("Getting video thumbnails...");
                 
-                console.log("CASE INFO", caseInfo);
+                $.getJSON('https://www.vimeo.com/api/v2/video/' + caseInfo.videoId + '.json?callback=?', {format: "json"}, function(data) {
+                    
+                    caseInfo.videoThumbnailLarge = data[0].thumbnail_large;
+                    caseInfo.videoThumbnailMedium = data[0].thumbnail_medium;
+                    caseInfo.videoThumbnailSmall = data[0].thumbnail_small;
+                    
+                    $("#video-thumbnail-status .message").text("Completed successfully!");
+                    
+                    resolve(caseInfo);
+                })
+                .fail(function(jqXHR, textStatus, errorThrown) {
+                    reject(caseInfo, errorThrown);
+                });
+            }
+            
+            function getVideoStatus(){
                 
-                resolve(caseInfo);
-            })
-            .fail(function(jqXHR, textStatus, errorThrown) {
-                reject(caseInfo, errorThrown);
-            });
+                console.log("Getting video status...");
+                
+                $.ajax({
+                    method: "GET",
+                    url: "https://api.vimeo.com/videos/" + caseInfo.videoId,
+                    beforeSend: function(request) {
+                        var bearerToken = "Bearer " + settings.vimeoAccessToken;
+                        request.setRequestHeader("Authorization", bearerToken);
+                    },
+                }).done(function(response) {
+                    if (response.status === "available") {
+                        areThumbnailsAvailable = true;
+                    }
+                }).fail(function(jqXHR, textStatus, errorThrown) {
+                    reject(caseInfo, errorThrown);
+                });
+                
+                if (areThumbnailsAvailable) {
+                    getThumbnails();
+                    
+                    return;
+                }
+                
+                if (!areThumbnailsAvailable && timeTakenInMilliseconds < timeout) {
+                    setTimeout(getVideoStatus, pollInterval);
+                    timeTakenInMilliseconds += pollInterval;
+                }
+                
+                if (timeTakenInMilliseconds >= timeout) {
+                    $("#video-thumbnail-status .error").text("The timeout was reached while waiting for video thumbnails to be available");
+                    
+                    resolve(caseInfo);
+                }
+            }
+            
+            getVideoStatus();
         });
         
         return promise;

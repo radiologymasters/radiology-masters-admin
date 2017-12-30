@@ -7,7 +7,8 @@ define("settings", function() {
         viewCaseUrl: "#/cases/view/",
         updateCaseUrl: "#/cases/update/",
         deleteCaseUrl: "#/cases/delete/",
-        
+        videoThumbnailPollIntervalInMilliseconds: 5000,
+        videoThumbnailTimeoutInMilliseconds: 120000,
         vimeoClientId: "0ad8cfad61144eb7ace74df7d1ed9b3780abd2a8",
         vimeoClientSecret: "KVW7EiyQRXqqAy8aF8vGmZzcAtGw3pR2e2vmTRjd7uaEn6qHO9mZx2qHHM2OKtwoGJcC5+vS+YklrDgWU6KVt6nNWW34YKUfbHmtyX7d31Mb8w3ZvXO6tAJAPnm1qEf2",
         // The Vimeo access token must have the delete, create and upload scopes.
