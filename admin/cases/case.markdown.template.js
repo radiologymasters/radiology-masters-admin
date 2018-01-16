@@ -14,7 +14,7 @@ define("CaseMarkdownTemplateModel", ["settings", "utils", "jquery"], function(se
             
             var promise = new Promise(function(resolve, reject) {
                 
-                var filename = caseInfo.caseId + ".md";
+                var filename = formatMarkdownFilename(caseInfo.title);
                 var filePath = settings.gitHubRepositoryCaseFileBasePath + filename;
                 
                 var markdownTemplate = createMarkDownTemplate(caseInfo);
@@ -138,6 +138,16 @@ define("CaseMarkdownTemplateModel", ["settings", "utils", "jquery"], function(se
             console.log("Template", template);
             
             return template;
+        }
+        
+        function formatMarkdownFilename(caseTitle) {
+            var filename = caseTitle
+                .replace(/\s+/g, '-')
+                .toLowerCase();
+                
+            filename += ".md";
+            
+            return filename;
         }
 
     }
