@@ -21,6 +21,7 @@ define("CaseModel", ["utils", "CaseNotificationModel"], function(utils, CaseNoti
         this.updatedByUserId = null;
         this.updatedByUserFullName = "";
         this.updatedTimestamp = "";
+        this.isPublished = false;
         
         this.stats = {
             views: 0,
@@ -71,6 +72,8 @@ define("CaseModel", ["utils", "CaseNotificationModel"], function(utils, CaseNoti
                         self.updatedByUserFullName = caseInfo.val().updatedByUserFullName,
                         self.updatedTimestamp = new Date(caseInfo.val().updatedTimestamp);
                         
+                        self.isPublished = caseInfo.val().isPublished;
+
                         self.stats = caseInfo.val().stats;
 
                         console.log("Case with id: " + caseId + ", successfully loaded");
@@ -106,6 +109,7 @@ define("CaseModel", ["utils", "CaseNotificationModel"], function(utils, CaseNoti
                     updatedByUserId: self.updatedByUserId,
                     updatedByUserFullName: self.updatedByUserFullName,
                     updatedTimestamp: self.updatedTimestamp,
+                    isPublished: self.isPublished,
                     stats: self.stats
                 };
 

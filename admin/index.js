@@ -80,6 +80,10 @@ require(requiredModules, function(firebaseConfig, $, sammy, settings, User) {
         this.get("#/cases", function() {
           $('#viewport').load("cases/all.html");
         });
+
+        this.get("#/cases/publish", function() {
+          $('#viewport').load("cases/publish.html");
+        });
         
         this.get("#/cases/add", function() {
           $("#viewport").load("cases/add.html");
