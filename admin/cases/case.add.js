@@ -168,8 +168,8 @@ require(requiredModules, function(
         caseInfo.createdByUserFullName = user.displayName;
         
         uploadVideo(_videoFile, caseInfo)
-            .then(getVideoThumbnails)
-            .then(uploadFileToGithub)
+            //.then(getVideoThumbnails)
+            //.then(uploadFileToGithub)
             .then(writeCaseToDatabase)
             .then(handleCaseCreationSuccess)
             .catch(function (caseInfo, error) {

@@ -7,6 +7,7 @@ define("settings", function() {
         viewCaseUrl: "#/cases/view/",
         updateCaseUrl: "#/cases/update/",
         deleteCaseUrl: "#/cases/delete/",
+        videoProcessingStatusPollIntervalInMilliseconds: 30000,
         videoThumbnailPollIntervalInMilliseconds: 5000,
         videoThumbnailTimeoutInMilliseconds: 120000,
         vimeoClientId: "0ad8cfad61144eb7ace74df7d1ed9b3780abd2a8",
