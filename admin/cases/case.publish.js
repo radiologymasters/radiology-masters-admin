@@ -16,9 +16,6 @@ require(["settings", "dynatable", "jquery", "VideoModel","CaseMarkdownTemplateMo
                 .once('value')
                 .then(function(data) {
                     var cases = data.val();
-                    
-                    console.log("Cases", cases);
-
                     var unpublishedCases = filterUnpublishedCases(cases);
                     resolve(unpublishedCases);
                 });
@@ -33,9 +30,6 @@ require(["settings", "dynatable", "jquery", "VideoModel","CaseMarkdownTemplateMo
             var caseInfo = cases[caseId];
             
             if (caseInfo.hasOwnProperty("isPublished") && !caseInfo.isPublished) {
-                
-                console.log("case is unpublished", caseInfo);
-                
                 unpublishedCases.push(caseInfo);
             }
         }
@@ -44,9 +38,6 @@ require(["settings", "dynatable", "jquery", "VideoModel","CaseMarkdownTemplateMo
     }
 
     function updateCaseVideoProcessingStatuses() {
-
-        console.log("Updating video statuses for all unpublished cases...");
-
         var videos = _table.find(".video-info");
 
         videos.each(function(index) {
@@ -68,8 +59,8 @@ require(["settings", "dynatable", "jquery", "VideoModel","CaseMarkdownTemplateMo
             var video = new Video(videoId);
             video.getProcessingStatus().then(function (processingStatus) { 
                 
-                videoSpan.data("video-processing-status", processingStatus);
-                var statusText = "Processing please wait..."
+                videoInfoSpan.data("video-processing-status", processingStatus);
+                var statusText = "Processing video"
 
                 // check if the video thumbnails have been generated
                 if (processingStatus === "available") {
@@ -91,10 +82,13 @@ require(["settings", "dynatable", "jquery", "VideoModel","CaseMarkdownTemplateMo
         e.preventDefault();
 
         var caseId = $(this).data("case-id");
-
+        
         var caseInfo = _cases.filter(function(obj) {
             return obj.caseId === caseId;
         })[0];
+
+        var processingStatusSpan = $(".video-" + caseInfo.videoId + "-processing-status");
+        processingStatusSpan.text("Publishing");
 
         var video = new Video(caseInfo.videoId);
         video.getThumbnails().then(function(thumbnails) {
@@ -107,14 +101,6 @@ require(["settings", "dynatable", "jquery", "VideoModel","CaseMarkdownTemplateMo
                 .then(updateCase);
         });
     }
-
-    function cleanUpAfterPublishingCase(caseId) {
-        // TODO
-        // tidy up code
-        // remove the case from the _cases array
-        // remove the row from the case table
-        // add publishing notification and toast
-    };
 
     function updateCase(caseInfo) {
         
@@ -135,7 +121,19 @@ require(["settings", "dynatable", "jquery", "VideoModel","CaseMarkdownTemplateMo
             model.updatedTimestamp = new Date().getTime();
 
             model.update(firebase).then(function () {
-                cleanUpAfterPublishingCase(caseInfo.caseId);
+                
+                var processingStatusSpan = $(".video-" + caseInfo.videoId + "-processing-status");
+                processingStatusSpan.text("Publishing complete");
+
+                setTimeout(function () {
+                    _cases = _cases.filter(function(obj) {
+                        return obj.caseId !== caseInfo.caseId;
+                    });
+
+                    var videoRow = processingStatusSpan.closest("tr");
+                    videoRow.remove();
+
+                }, 5000);
             });
         });
     }
@@ -184,7 +182,7 @@ require(["settings", "dynatable", "jquery", "VideoModel","CaseMarkdownTemplateMo
             statusColumn.append(processingStatusSpan);
 
             var viewCaseLink = $("<a/>", { "class": "action btn btn-default", href: settings.viewCaseUrl + caseInfo.caseId, text: "View" });
-            var publishLink = $("<a/>", { "class": "action btn btn-primary publish publish-case-" + caseInfo.caseId, "data-case-id": caseInfo.caseId, text: "Publish"});
+            var publishLink = $("<a/>", { "class": "action btn btn-primary publish publish-case-" + caseInfo.caseId, style: "display:none;", "data-case-id": caseInfo.caseId, text: "Publish"});
            
             var actionsColumn = $("<td/>")
                 .append(viewCaseLink, publishLink);
@@ -206,7 +204,7 @@ require(["settings", "dynatable", "jquery", "VideoModel","CaseMarkdownTemplateMo
         
         _container.stopLoading();
 
-       // updateCaseVideoProcessingStatuses();
+        updateCaseVideoProcessingStatuses();
     })
     .catch(function (error) {
         console.error(error);

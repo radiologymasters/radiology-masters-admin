@@ -5,7 +5,6 @@ var requiredModules = [
     "jquery",
     "utils",
     "CaseModel",
-    "CaseMarkdownTemplateModel",
     "trumbowyg",
     "trumbowygCleanPaste"
 ];
@@ -17,7 +16,6 @@ require(requiredModules, function(
     $,
     utils,
     CaseModel,
-    CaseMarkdownTemplate,
     MediumEditor,
     AutoList) {
    
@@ -96,35 +94,6 @@ require(requiredModules, function(
         progress.innerHTML = percentComplete + '%';
     }
     
-    function uploadFileToGithub(caseInfo) {
-        
-        console.log("uploading file to GitHub...");
-        
-        var promise = new Promise(function(resolve, reject) {
-        
-            var markdownTemplate = new CaseMarkdownTemplate();
-            markdownTemplate
-                .create(caseInfo)
-                .then(function () {
-        
-                    caseInfo.markdownTemplatePath = markdownTemplate.path;
-                    caseInfo.markdownTemplateSHA = markdownTemplate.SHA;
-                    caseInfo.markdownTemplateUrl = markdownTemplate.url;
-                
-                    $("#github-write-status").addClass("success");
-                    $("#github-write-status .message").text("Completed successfully!");
-                    
-                    resolve(caseInfo);
-                
-                }).catch(function (error) {
-                    $("#github-write-status .error").text("An error occurred while uploading markdown template: " + error);
-                    reject(caseInfo, error);
-                });
-        });
-        
-        return promise;
-    }
-    
     function writeCaseToDatabase(caseInfo) {
         
         var promise = new Promise(function(resolve, reject) {
@@ -168,96 +137,11 @@ require(requiredModules, function(
         caseInfo.createdByUserFullName = user.displayName;
         
         uploadVideo(_videoFile, caseInfo)
-            //.then(getVideoThumbnails)
-            //.then(uploadFileToGithub)
             .then(writeCaseToDatabase)
             .then(handleCaseCreationSuccess)
             .catch(function (caseInfo, error) {
                 console.log("An error occurred while attempting to create the case", error);
             });
-    }
-    
-    function getVideoThumbnails(caseInfo) {
-        
-        var promise = new Promise(function(resolve, reject) {
-            
-            $("#video-thumbnail-status .progress").show();
-            
-            var areThumbnailsAvailable = false;
-            var timeout = settings.videoThumbnailTimeoutInMilliseconds || 60000;
-            var pollInterval = settings.videoThumbnailPollIntervalInMilliseconds || 5000;
-            var timeTakenInMilliseconds = 0;
-            
-            function getThumbnails() {
-                
-                console.log("Getting video thumbnails...");
-                
-                $.getJSON('https://www.vimeo.com/api/v2/video/' + caseInfo.videoId + '.json?callback=?', {format: "json"}, function(data) {
-                    
-                    caseInfo.videoThumbnailLarge = data[0].thumbnail_large;
-                    caseInfo.videoThumbnailMedium = data[0].thumbnail_medium;
-                    caseInfo.videoThumbnailSmall = data[0].thumbnail_small;
-                    
-                    $("#video-thumbnail-status .progress").hide();
-                    $("#video-thumbnail-status").addClass("success");
-                    $("#video-thumbnail-status .message").text("Completed successfully!");
-                    
-                    resolve(caseInfo);
-                })
-                .fail(function(jqXHR, textStatus, errorThrown) {
-                    
-                    $("#video-thumbnail-status .progress").hide();
-                    
-                    reject(caseInfo, errorThrown);
-                });
-            }
-            
-            function getVideoStatus(){
-                
-                console.log("Getting video status...");
-                
-                $.ajax({
-                    method: "GET",
-                    url: "https://api.vimeo.com/videos/" + caseInfo.videoId,
-                    beforeSend: function(request) {
-                        var bearerToken = "Bearer " + settings.vimeoAccessToken;
-                        request.setRequestHeader("Authorization", bearerToken);
-                    },
-                }).done(function(response) {
-                    if (response.status === "available") {
-                        areThumbnailsAvailable = true;
-                    }
-                }).fail(function(jqXHR, textStatus, errorThrown) {
-                    
-                    $("#video-thumbnail-status .progress").hide();
-                    
-                    reject(caseInfo, errorThrown);
-                });
-                
-                if (areThumbnailsAvailable) {
-                    getThumbnails();
-                    
-                    return;
-                }
-                
-                if (!areThumbnailsAvailable && timeTakenInMilliseconds < timeout) {
-                    setTimeout(getVideoStatus, pollInterval);
-                    timeTakenInMilliseconds += pollInterval;
-                }
-                
-                if (timeTakenInMilliseconds >= timeout) {
-                    $("#video-thumbnail-status .error").text("The timeout was reached while waiting for video thumbnails to be available");
-                    
-                    $("#video-thumbnail-status .progress").hide();
-                    
-                    resolve(caseInfo);
-                }
-            }
-            
-            getVideoStatus();
-        });
-        
-        return promise;
     }
     
     function handleCaseCreationSuccess(caseInfo) {
