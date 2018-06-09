@@ -61,12 +61,17 @@ body {
 
 /**START VALIDATION LABEL COLOURS**/
 .error {
-    color: red;
+    color: red !important;
 }
 
 .success {
-    color: #0ce3ac;
+    color: #0ce3ac !important;
 }
+
+.in-progress {
+    color: orange !important;
+}
+
 /**END VALIDATION LABEL COLOURS**/
 
 /**START JQUERY TIMEAGO**/

@@ -45,64 +45,80 @@ require(requiredModules, function($, settings, utils, CaseModel, CaseMarkdownTem
     
     function deleteVideo(caseInfo) {
         
-        
-        // TODO REMOVE WHEN UPLOAD WOKRING AGAIN
-        // var promise = new Promise(function(resolve, reject) {
-        //     resolve(caseInfo);
-        // });
-        // return promise;
-        
-        console.log("Deleting video with id: " + caseInfo.videoId);
-        
-        // skip if video id not specified
-        if (!caseInfo.videoId) {
-            
-            var skipDeleteVideoPromise = new Promise(function(resolve, reject) {
+        var promise = null;
+
+        if (!caseInfo.previousVideoId) {
+
+            console.log("No previous video exists, skipping delete...");
+
+            promise = new Promise(function(resolve, reject) {
                 resolve(caseInfo);
             });
+
+        } else {
+
+            console.log("Deleting old video with id: " + caseInfo.previousVideoId);
             
-            return skipDeleteVideoPromise;
+            promise = new Promise(function(resolve, reject) {
+            
+                var video = new VideoModel(caseInfo.previousVideoId);
+                video
+                    .delete()
+                    .then(function () {
+                        
+                        caseInfo.previousVideoId = null;
+
+                        resolve(caseInfo); 
+                    })
+                    .catch(function (error) {
+
+                        console.log("An error occurred while deleting the previous video: " + error.message);
+                        
+                        reject(error); 
+                    });
+            });
         }
         
-        var deleteVideoPromise = new Promise(function(resolve, reject) {
-            
-            var video = new VideoModel(caseInfo.videoId);
-            video
-                .delete()
-                .then(function () {
-                   resolve(caseInfo); 
-                })
-                .catch(function (error) {
-                   reject(error); 
-                });
-        });
-        
-        return deleteVideoPromise;
+        return promise;
     }
     
     function deleteMarkdownTemplate(caseInfo) {
         
-        console.log("Deleting markdown template at path: " + caseInfo.markdownTemplatePath);
-        
-        var promise = new Promise(function(resolve, reject) {
+        var promise = null;
+
+        if (caseInfo.markdownTemplatePath) {
+
+            console.log("Deleting old markdown template", caseInfo.previousMarkdownTemplatePath, caseInfo.previousMarkdownTemplateSHA);
             
-            var markdownTemplate = new CaseMarkdownTemplate();
-            markdownTemplate.caseId = caseInfo.caseId;
-            markdownTemplate.path = caseInfo.markdownTemplatePath;
-            markdownTemplate.SHA = caseInfo.markdownTemplateSHA;
-            
-            markdownTemplate
-                .delete()
-                .then(function () {
-                    
-                    console.log("Markdown template deleted.");
-                    
-                    resolve(caseInfo);
-                })
-                .catch(function (error) {
-                   reject(error); 
-                });
-        });
+            promise = new Promise(function(resolve, reject) {
+                
+                var markdownTemplate = new CaseMarkdownTemplate();
+                markdownTemplate.caseId = caseInfo.caseId;
+                markdownTemplate.path = caseInfo.markdownTemplatePath;
+                markdownTemplate.SHA = caseInfo.markdownTemplateSHA;
+                
+                markdownTemplate
+                    .delete()
+                    .then(function () {
+                        
+                        console.log("Markdown template deleted.");
+
+                        resolve(caseInfo);
+                    })
+                    .catch(function (error) {
+                        
+                        console.log("An error occurred while deleting the case template: " + error.message);
+                        
+                        reject(error); 
+                    });
+            });
+        } else {
+            console.log("No previous markdown template exists, skipping delete...");
+
+            promise = new Promise(function(resolve, reject) {
+                resolve(caseInfo);
+            });
+        }
         
         return promise;
     }

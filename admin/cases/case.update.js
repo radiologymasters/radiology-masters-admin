@@ -5,10 +5,7 @@ var requiredModules = [
     "jquery",
     "utils",
     "CaseModel",
-    "CaseMarkdownTemplateModel",
     "VideoModel",
-    "trumbowyg",
-    "trumbowygCleanPaste",
     "loading"
 ];
 
@@ -19,7 +16,6 @@ require(requiredModules, function(
     $,
     utils,
     CaseModel,
-    CaseMarkdownTemplate,
     VideoModel) {
    
     var _videoFile = null;
@@ -58,7 +54,7 @@ require(requiredModules, function(
             } else {
                 
                 updateUploadProgress(0);
-    
+                
                 var uploader = new VimeoUpload({
                     name: caseInfo.title,
                     description: caseInfo.description,
@@ -87,11 +83,21 @@ require(requiredModules, function(
                         $("#video-upload-status").addClass("success");
                         $("#video-upload-status .message").text("Completed successfully!");
                         
+                        // 1. if a previous video exists mark it as previous so it can be cleaned up when the publishing happens.
+                        if (caseInfo.videoId) {
+                            
+                            caseInfo.previousVideoId = caseInfo.videoId;
+
+                            console.log("Previous video id", caseInfo.previousVideoId);
+                        }
+
                         console.log("Video upload details", videoId, videoUrl);
                         
+                        // 2. update the case with the uploaded video details.
+                        caseInfo.hasVideoChanged = _hasVideoChanged;
                         caseInfo.videoId = videoId;
                         caseInfo.videoUrl = videoUrl;
-                        
+
                         resolve(caseInfo);
                     }
                 });
@@ -108,118 +114,6 @@ require(requiredModules, function(
         var progress = document.getElementById('progress');
         progress.setAttribute('style', 'width:' + percentComplete + '%');
         progress.innerHTML = percentComplete + '%';
-    }
-    
-    function getVideoThumbnails(caseInfo) {
-        
-        var promise = new Promise(function(resolve, reject) {
-            
-            $("#video-thumbnail-status .progress").show();
-            
-            var areThumbnailsAvailable = false;
-            var timeout = settings.videoThumbnailTimeoutInMilliseconds || 60000;
-            var pollInterval = settings.videoThumbnailPollIntervalInMilliseconds || 5000;
-            var timeTakenInMilliseconds = 0;
-            
-            function getThumbnails() {
-                
-                console.log("Getting video thumbnails...");
-                
-                $.getJSON('https://www.vimeo.com/api/v2/video/' + caseInfo.videoId + '.json?callback=?', {format: "json"}, function(data) {
-                    
-                    caseInfo.videoThumbnailLarge = data[0].thumbnail_large;
-                    caseInfo.videoThumbnailMedium = data[0].thumbnail_medium;
-                    caseInfo.videoThumbnailSmall = data[0].thumbnail_small;
-                    
-                    $("#video-thumbnail-status .progress").hide();
-                    $("#video-thumbnail-status").addClass("success");
-                    $("#video-thumbnail-status .message").text("Completed successfully!");
-                    
-                    resolve(caseInfo);
-                })
-                .fail(function(jqXHR, textStatus, errorThrown) {
-                    
-                    $("#video-thumbnail-status .progress").hide();
-                    
-                    reject(caseInfo, errorThrown);
-                });
-            }
-            
-            function getVideoStatus(){
-                
-                console.log("Getting video status...");
-                
-                $.ajax({
-                    method: "GET",
-                    url: "https://api.vimeo.com/videos/" + caseInfo.videoId,
-                    beforeSend: function(request) {
-                        var bearerToken = "Bearer " + settings.vimeoAccessToken;
-                        request.setRequestHeader("Authorization", bearerToken);
-                    },
-                }).done(function(response) {
-                    if (response.status === "available") {
-                        areThumbnailsAvailable = true;
-                    }
-                }).fail(function(jqXHR, textStatus, errorThrown) {
-                    
-                    $("#video-thumbnail-status .progress").hide();
-                    
-                    reject(caseInfo, errorThrown);
-                });
-                
-                if (areThumbnailsAvailable) {
-                    getThumbnails();
-                    
-                    return;
-                }
-                
-                if (!areThumbnailsAvailable && timeTakenInMilliseconds < timeout) {
-                    setTimeout(getVideoStatus, pollInterval);
-                    timeTakenInMilliseconds += pollInterval;
-                }
-                
-                if (timeTakenInMilliseconds >= timeout) {
-                    $("#video-thumbnail-status .error").text("The timeout was reached while waiting for video thumbnails to be available");
-                    
-                    $("#video-thumbnail-status .progress").hide();
-                    
-                    resolve(caseInfo);
-                }
-            }
-            
-            getVideoStatus();
-        });
-        
-        return promise;
-    }
-    
-    function uploadFileToGithub(caseInfo) {
-        
-        console.log("uploading file to GitHub...");
-        
-        var promise = new Promise(function(resolve, reject) {
-        
-            var markdownTemplate = new CaseMarkdownTemplate();
-            markdownTemplate
-                .create(caseInfo)
-                .then(function () {
-        
-                    caseInfo.markdownTemplatePath = markdownTemplate.path;
-                    caseInfo.markdownTemplateSHA = markdownTemplate.SHA;
-                    caseInfo.markdownTemplateUrl = markdownTemplate.url;
-                
-                    $("#github-write-status").addClass("success");
-                    $("#github-write-status .message").text("Completed successfully!");
-                    
-                    resolve(caseInfo);
-                
-                }).catch(function (error) {
-                    $("#github-write-status .error").text("An error occurred while uploading markdown template: " + error);
-                    reject(caseInfo, error);
-                });
-        });
-        
-        return promise;
     }
     
     function writeCaseToDatabase(caseInfo) {
@@ -261,13 +155,11 @@ require(requiredModules, function(
         _caseInfo.updatedByUserId = user.uid;
         _caseInfo.updatedByUserFullName = user.displayName;
         _caseInfo.updatedTimestamp = new Date().getTime();
+        _caseInfo.isPublished = false;
+        _caseInfo.hasContentChanged = true; // Always publish changes to github.
         
         uploadVideo(_videoFile, _caseInfo)
-            .then(getVideoThumbnails)
-            .then(deleteMarkdownTemplate)
-            .then(uploadFileToGithub)
             .then(writeCaseToDatabase)
-            .then(deleteVideo)
             .then(handleCaseUpdated)
             .catch(function (caseInfo, error) {
                 console.log("An error occurred while attempting to create the case", error);
@@ -280,7 +172,7 @@ require(requiredModules, function(
         setTimeout(function () {
             $('#case-status-steps').hide();
             $('#case-status-sucess').show();
-        }, 1000);
+        }, 3000);
     }
     
     function handleDragFileOver(e) {
@@ -299,8 +191,8 @@ require(requiredModules, function(
     
     function handleCaseLoaded() {
         $("#case-title").val(_caseInfo.title);
+        $("#case-description").val(_caseInfo.description);
         $("#case-options-delete").prop("href", settings.deleteCaseUrl + _caseInfo.caseId);
-        $('#case-description').trumbowyg("html", _caseInfo.description);
         $("#case-video-embed").prop("src", "https://player.vimeo.com/video/" + _caseInfo.videoId).fadeIn();
         $("#case-speciality").val(_caseInfo.speciality).trigger('change');
         $("#case-complexity").val(_caseInfo.complexity);
@@ -317,76 +209,6 @@ require(requiredModules, function(
         _caseInfoErrorPanel.show();
     }
     
-    function deleteVideo(caseInfo) {
-        
-        console.log("Deleting video with id: " + _previousVideoId);
-        
-        var deleteVideoPromise = new Promise(function(resolve, reject) {
-            
-            if (!_hasVideoChanged) {
-                
-                $("#video-delete-status").addClass("success");
-                $("#video-delete-status .message").text("Video has not changed, skipping...");
-                
-                resolve(caseInfo);
-                
-            } else {
-                
-                var video = new VideoModel(_previousVideoId);
-                video
-                    .delete()
-                    .then(function () {
-                        
-                        $("#vimeo-delete-status").addClass("success");
-                        $("#vimeo-delete-status .message").text("Completed successfully!");
-                        
-                        resolve(caseInfo); 
-                    })
-                    .catch(function (error) {
-                        
-                        $("#vimeo-delete-status .error").text("An error occurred while deleting the previous video: " + error.message);
-                        
-                        reject(error); 
-                    });
-            }
-        });
-        
-        return deleteVideoPromise;
-    }
-    
-    function deleteMarkdownTemplate(caseInfo) {
-        
-        console.log("Deleting markdown template at path: " + caseInfo.markdownTemplatePath);
-        
-        var promise = new Promise(function(resolve, reject) {
-            
-            var markdownTemplate = new CaseMarkdownTemplate();
-            markdownTemplate.caseId = caseInfo.caseId;
-            markdownTemplate.path = caseInfo.markdownTemplatePath;
-            markdownTemplate.SHA = caseInfo.markdownTemplateSHA;
-            
-            markdownTemplate
-                .delete()
-                .then(function () {
-                    
-                    console.log("Markdown template deleted.");
-                    
-                    $("#github-delete-status").addClass("success");
-                    $("#github-delete-status .message").text("Completed successfully!");
-                    
-                    resolve(caseInfo);
-                })
-                .catch(function (error) {
-                    
-                    $("#github-delete-status .error").text("An error occurred while deleting the case template: " + error.message);
-                    
-                    reject(error); 
-                });
-        });
-        
-        return promise;
-    }
-    
     function setup() {
         
         _caseId = utils.getRouteParamValue(window.location.href);
@@ -397,10 +219,7 @@ require(requiredModules, function(
         loadCase();
         
         $("#case-speciality").select2();
-        $('#case-description').trumbowyg({
-            btns: ['h1', 'h2', 'h3', 'h4', 'p', 'blockquote', 'strong', 'em', 'link', 'unorderedList', 'orderedList'],
-            autogrow: true
-        });
+
         // This will set `ignore` for all validation calls
         // NOTE: this is important because jquery validate will try to validate the MediumEditor incorrectly and error.
         $.validator.setDefaults({

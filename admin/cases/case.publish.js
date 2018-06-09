@@ -45,7 +45,7 @@ require(["settings", "dynatable", "jquery", "VideoModel","CaseMarkdownTemplateMo
             var videoId = videoInfoSpan.data("video-id");
             var previousProcessingStatus = videoInfoSpan.data("video-processing-status");
             var caseId = videoInfoSpan.data("case-id");
-            var processingStatusSpan = $(".video-" + videoId + "-processing-status");
+            var processingStatusText = $(".video-" + videoId + "-processing-status .processing-status-text");
 
             // check if the video processing status is already "available" and therefore been checked before
             // and do not check again to avoid rate limiting on the Vimeo API.
@@ -71,7 +71,8 @@ require(["settings", "dynatable", "jquery", "VideoModel","CaseMarkdownTemplateMo
                     publishButton.show();
                 }
 
-                processingStatusSpan.text(statusText);
+                processingStatusText.text(statusText);
+                
             }); 
         });
 
@@ -81,24 +82,37 @@ require(["settings", "dynatable", "jquery", "VideoModel","CaseMarkdownTemplateMo
     function publishCase(e) {
         e.preventDefault();
 
+        $(this).hide();
+
         var caseId = $(this).data("case-id");
         
-        var caseInfo = _cases.filter(function(obj) {
+        var caseVideoInfo = _cases.filter(function(obj) {
             return obj.caseId === caseId;
         })[0];
 
-        var processingStatusSpan = $(".video-" + caseInfo.videoId + "-processing-status");
-        processingStatusSpan.text("Publishing");
+        var processingStatusText = $(".video-" + caseVideoInfo.videoId + "-processing-status .processing-status-text");
+        var processingStatusSpinner = $(".video-" + caseVideoInfo.videoId + "-processing-status .processing-status-spinner");
+        
+        processingStatusText.addClass("in-progress").text("Publishing");
+        processingStatusSpinner.show();
 
-        var video = new Video(caseInfo.videoId);
-        video.getThumbnails().then(function(thumbnails) {
+        var caseInfo = new Case();
+        caseInfo.load(firebase, caseId).then(function () {
 
-            caseInfo.videoThumbnailLarge = thumbnails.largeUrl;
-            caseInfo.videoThumbnailMedium = thumbnails.mediumUrl;
-            caseInfo.videoThumbnailSmall = thumbnails.smallUrl;
+            console.log("Publishing case info", caseInfo);
 
-            uploadFileToGithub(caseInfo)
-                .then(updateCase);
+            var video = new Video(caseVideoInfo.videoId);
+            video.getThumbnails().then(function(thumbnails) {
+
+                caseInfo.videoThumbnailLarge = thumbnails.largeUrl;
+                caseInfo.videoThumbnailMedium = thumbnails.mediumUrl;
+                caseInfo.videoThumbnailSmall = thumbnails.smallUrl;
+
+                deleteMarkdownTemplate(caseInfo)
+                    .then(uploadFileToGithub)
+                    .then(deleteVideo) 
+                    .then(updateCase);
+            });
         });
     }
 
@@ -113,6 +127,9 @@ require(["settings", "dynatable", "jquery", "VideoModel","CaseMarkdownTemplateMo
             model.markdownTemplatePath = caseInfo.markdownTemplatePath;
             model.markdownTemplateSHA = caseInfo.markdownTemplateSHA;
             model.markdownTemplateUrl = caseInfo.markdownTemplateUrl;
+            model.previousVideoId = caseInfo.previousVideoId;
+
+            // Mark as published.
             model.isPublished = true;
 
             var user = firebase.auth().currentUser;
@@ -122,15 +139,18 @@ require(["settings", "dynatable", "jquery", "VideoModel","CaseMarkdownTemplateMo
 
             model.update(firebase).then(function () {
                 
-                var processingStatusSpan = $(".video-" + caseInfo.videoId + "-processing-status");
-                processingStatusSpan.text("Publishing complete");
+                var processingStatusText = $(".video-" + caseInfo.videoId + "-processing-status .processing-status-text");
+                var processingStatusSpinner = $(".video-" + caseInfo.videoId + "-processing-status .processing-status-spinner");
+                
+                processingStatusText.removeClass("in-progress").addClass("success").text("Publishing complete");
+                processingStatusSpinner.hide();
 
                 setTimeout(function () {
                     _cases = _cases.filter(function(obj) {
                         return obj.caseId !== caseInfo.caseId;
                     });
 
-                    var videoRow = processingStatusSpan.closest("tr");
+                    var videoRow = processingStatusText.closest("tr");
                     videoRow.remove();
 
                 }, 5000);
@@ -144,19 +164,31 @@ require(["settings", "dynatable", "jquery", "VideoModel","CaseMarkdownTemplateMo
         
         var promise = new Promise(function(resolve, reject) {
         
+            var processingStatusText = $(".video-" + caseInfo.videoId + "-processing-status .processing-status-text");
+
+            processingStatusText.text("Uploading file to GitHub");
+
             var markdownTemplate = new CaseMarkdownTemplate();
             markdownTemplate
                 .create(caseInfo)
                 .then(function () {
-        
+                    
                     caseInfo.markdownTemplatePath = markdownTemplate.path;
                     caseInfo.markdownTemplateSHA = markdownTemplate.SHA;
                     caseInfo.markdownTemplateUrl = markdownTemplate.url;
-                
+                    caseInfo.hasContentChanged = false;
+                    
+                    processingStatusText.text("File uploaded to GitHub");
+
                     resolve(caseInfo);
                 
                 }).catch(function (error) {
-                    reject(error);
+
+                    processingStatusText.removeClass("progress").addClass("error").text("Unable to upload file to GitHub");
+
+                    console.log("An error occurred while uploading the case template: " + error.message);
+                    
+                    reject(error); 
                 });
         });
         
@@ -164,7 +196,7 @@ require(["settings", "dynatable", "jquery", "VideoModel","CaseMarkdownTemplateMo
     }
 
     loadAllDraftCases().then(function (cases) {
-        
+
         _cases = cases;
 
         for(var key in _cases) {
@@ -178,7 +210,10 @@ require(["settings", "dynatable", "jquery", "VideoModel","CaseMarkdownTemplateMo
             titleColumn.append(videoInfoSpan);
 
             var statusColumn = $("<td/>");
-            var processingStatusSpan = $("<span/>", { class: "video-" + caseInfo.videoId + "-processing-status", "text": "Please wait..." }); 
+            var processingStatusSpan = $("<span/>", { class: "video-" + caseInfo.videoId + "-processing-status" }); 
+            var processingStatusText = $("<span/>", { class: "processing-status-text", "text": "Please wait..." }); 
+            var processingStatusSpinner = $("<img/>", { class: "processing-status-spinner", src:"/admin/img/flask-spinner.gif", style:"height:25px; width:25px; display:none;" });
+            processingStatusSpan.append(processingStatusText, processingStatusSpinner);
             statusColumn.append(processingStatusSpan);
 
             var viewCaseLink = $("<a/>", { "class": "action btn btn-default", href: settings.viewCaseUrl + caseInfo.caseId, text: "View" });
@@ -209,4 +244,99 @@ require(["settings", "dynatable", "jquery", "VideoModel","CaseMarkdownTemplateMo
     .catch(function (error) {
         console.error(error);
     });
+
+    function deleteVideo(caseInfo) {
+        
+        var promise = null;
+
+        if (!caseInfo.previousVideoId) {
+
+            console.log("No previous video exists, skipping delete...");
+
+            promise = new Promise(function(resolve, reject) {
+                resolve(caseInfo);
+            });
+
+        } else {
+
+            console.log("Deleting old video with id: " + caseInfo.previousVideoId);
+            
+            promise = new Promise(function(resolve, reject) {
+            
+                var processingStatusText = $(".video-" + caseInfo.videoId + "-processing-status .processing-status-text");
+
+                processingStatusText.text("Deleting old video");
+
+                var video = new Video(caseInfo.previousVideoId);
+                video
+                    .delete()
+                    .then(function () {
+                        
+                        processingStatusText.text("Old video deleted");
+                        
+                        caseInfo.previousVideoId = null;
+
+                        resolve(caseInfo); 
+                    })
+                    .catch(function (error) {
+                        
+                        processingStatusText.removeClass("progress").addClass("error").text("Unable to delete old video");
+
+                        console.log("An error occurred while deleting the previous video: " + error.message);
+                        
+                        reject(error); 
+                    });
+            });
+        }
+        
+        return promise;
+    }
+    
+    function deleteMarkdownTemplate(caseInfo) {
+        
+        var promise = null;
+
+        if (caseInfo.markdownTemplatePath) {
+
+            console.log("Deleting old markdown template", caseInfo.previousMarkdownTemplatePath, caseInfo.previousMarkdownTemplateSHA);
+            
+            promise = new Promise(function(resolve, reject) {
+                
+                var markdownTemplate = new CaseMarkdownTemplate();
+                markdownTemplate.caseId = caseInfo.caseId;
+                markdownTemplate.path = caseInfo.markdownTemplatePath;
+                markdownTemplate.SHA = caseInfo.markdownTemplateSHA;
+                
+                var processingStatusText = $(".video-" + caseInfo.videoId + "-processing-status .processing-status-text");
+                processingStatusText.text("Deleting file from GitHub");
+
+                markdownTemplate
+                    .delete()
+                    .then(function () {
+                        
+                        console.log("Markdown template deleted.");
+                        
+                        processingStatusText.text("File deleted from GitHub");
+                        
+                        resolve(caseInfo);
+                    })
+                    .catch(function (error) {
+                        
+                        processingStatusText.removeClass("progress").addClass("error").text("Unable to delete file from GitHub");
+
+                        console.log("An error occurred while deleting the case template: " + error.message);
+                        
+                        reject(error); 
+                    });
+            });
+        } else {
+            console.log("No previous markdown template exists, skipping delete...");
+
+            promise = new Promise(function(resolve, reject) {
+                resolve(caseInfo);
+            });
+        }
+        
+        return promise;
+    }
 });

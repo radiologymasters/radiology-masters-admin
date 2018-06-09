@@ -5,8 +5,6 @@ var requiredModules = [
     "jquery",
     "utils",
     "CaseModel",
-    "trumbowyg",
-    "trumbowygCleanPaste"
 ];
 
 require(requiredModules, function(
@@ -15,9 +13,7 @@ require(requiredModules, function(
     select2,
     $,
     utils,
-    CaseModel,
-    MediumEditor,
-    AutoList) {
+    CaseModel) {
    
     var _videoFile = null;
    
@@ -135,6 +131,10 @@ require(requiredModules, function(
         caseInfo.complexity = $("#case-complexity").val();
         caseInfo.createdByUserId = user.uid;
         caseInfo.createdByUserFullName = user.displayName;
+        caseInfo.isPublished = false;
+        caseInfo.hasContentChanged = true; // Always push changes to github.
+
+        console.log("Adding case", caseInfo);
         
         uploadVideo(_videoFile, caseInfo)
             .then(writeCaseToDatabase)
@@ -159,10 +159,6 @@ require(requiredModules, function(
     }
 
     $("#case-speciality").select2();
-    $('#case-description').trumbowyg({
-    btns: ['h1', 'h2', 'h3', 'h4', 'p', 'blockquote', 'strong', 'em', 'link', 'unorderedList', 'orderedList'],
-        autogrow: true
-    });
     // This will set `ignore` for all validation calls
     // NOTE: this is important because jquery validate will try to validate the MediumEditor incorrectly and error.
     $.validator.setDefaults({

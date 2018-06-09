@@ -7,6 +7,9 @@ define("CaseModel", ["utils", "CaseNotificationModel"], function(utils, CaseNoti
         this.description = "";
         this.speciality = "";
         this.complexity = "";
+        this.hasContentChanged = false;
+        this.hasVideoChanged = false;
+        this.previousVideoId = null;
         this.videoId = null;
         this.videoUrl = "";
         this.videoThumbnailSmall = "";
@@ -55,20 +58,25 @@ define("CaseModel", ["utils", "CaseNotificationModel"], function(utils, CaseNoti
                         self.description = caseInfo.val().description;
                         self.speciality = caseInfo.val().speciality;
                         self.complexity = caseInfo.val().complexity;
+                        self.hasContentChanged = caseInfo.val().hasContentChanged;
+                        
+                        self.hasVideoChanged = caseInfo.val().hasVideoChanged;
                         self.videoId = caseInfo.val().videoId;
                         self.videoUrl = caseInfo.val().videoUrl;
+                        self.previousVideoId = caseInfo.val().previousVideoId || null;
                         self.videoThumbnailSmall = caseInfo.val().videoThumbnailSmall;
                         self.videoThumbnailMedium = caseInfo.val().videoThumbnailMedium;
                         self.videoThumbnailLarge = caseInfo.val().videoThumbnailLarge;
+
                         self.markdownTemplatePath = caseInfo.val().markdownTemplatePath;
                         self.markdownTemplateSHA = caseInfo.val().markdownTemplateSHA;
                         self.markdownTemplateUrl = caseInfo.val().markdownTemplateUrl;
-                        
+
                         self.createdByUserId = caseInfo.val().createdByUserId;
                         self.createdByUserFullName = caseInfo.val().createdByUserFullName;
                         self.createdTimestamp = new Date(caseInfo.val().createdTimestamp);
                         
-                        self.updatedByUserId = caseInfo.val().updatedByUserId,
+                        self.updatedByUserId = caseInfo.val().updatedByUserId || null,
                         self.updatedByUserFullName = caseInfo.val().updatedByUserFullName,
                         self.updatedTimestamp = new Date(caseInfo.val().updatedTimestamp);
                         
@@ -95,7 +103,10 @@ define("CaseModel", ["utils", "CaseNotificationModel"], function(utils, CaseNoti
                     description: self.description,
                     speciality: self.speciality,
                     complexity: self.complexity,
+                    hasContentChanged: self.hasContentChanged,
+                    hasVideoChanged: self.hasVideoChanged,
                     videoId: self.videoId,
+                    previousVideoId: self.previousVideoId,
                     videoUrl: self.videoUrl,
                     videoThumbnailSmall: self.videoThumbnailSmall,
                     videoThumbnailMedium: self.videoThumbnailMedium,
@@ -149,7 +160,10 @@ define("CaseModel", ["utils", "CaseNotificationModel"], function(utils, CaseNoti
                     description: self.description,
                     speciality: self.speciality,
                     complexity: self.complexity,
+                    hasContentChanged: self.hasContentChanged,
+                    hasVideoChanged: self.hasVideoChanged,
                     videoId: self.videoId,
+                    previousVideoId: self.previousVideoId,
                     videoUrl: self.videoUrl,
                     videoThumbnailSmall: self.videoThumbnailSmall,
                     videoThumbnailMedium: self.videoThumbnailMedium,
@@ -159,10 +173,11 @@ define("CaseModel", ["utils", "CaseNotificationModel"], function(utils, CaseNoti
                     markdownTemplateUrl: self.markdownTemplateUrl,
                     createdByUserId: self.createdByUserId,
                     createdByUserFullName: self.createdByUserFullName,
-                    createdTimestamp: self.createdTimestamp,
+                    createdTimestamp: new Date().getTime(),
                     updatedByUserId: self.updatedByUserId,
                     updatedByUserFullName: self.updatedByUserFullName,
                     updatedTimestamp: self.updatedTimestamp,
+                    isPublished: self.isPublished,
                     stats: self.stats
                 };
 
