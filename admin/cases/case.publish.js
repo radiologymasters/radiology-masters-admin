@@ -212,7 +212,7 @@ require(["settings", "dynatable", "jquery", "VideoModel","CaseMarkdownTemplateMo
             var statusColumn = $("<td/>");
             var processingStatusSpan = $("<span/>", { class: "video-" + caseInfo.videoId + "-processing-status" }); 
             var processingStatusText = $("<span/>", { class: "processing-status-text", "text": "Please wait..." }); 
-            var processingStatusSpinner = $("<img/>", { class: "processing-status-spinner", src:"/admin/img/flask-spinner.gif", style:"height:25px; width:25px; display:none;" });
+            var processingStatusSpinner = $("<img/>", { class: "processing-status-spinner", src:"img/flask-spinner.gif", style:"height:25px; width:25px; display:none;" });
             processingStatusSpan.append(processingStatusText, processingStatusSpinner);
             statusColumn.append(processingStatusSpan);
 
